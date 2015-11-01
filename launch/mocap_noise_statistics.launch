@@ -1,0 +1,23 @@
+<launch>
+
+	<group ns="stat">
+
+		
+		<!--node name="mocap_node"
+			pkg="mocap_optitrack" 
+			type="mocap_node" 
+			respawn="false"
+			launch-prefix=""
+			required="true">
+			<rosparam file="$(find rockin_mocap)/config/fbm1_mocap.yaml" command="load" />
+		</node-->
+
+		<node name="statistics"
+			pkg="mocap_noise_statistics"
+			type="pose_listener.py"
+			output="screen"
+			required="true"
+		/>
+
+	</group>    
+</launch>
