@@ -19,7 +19,7 @@ class MyNode():
 		rospy.Subscriber("/fbm2h/robot_at_home/pose2d", Pose2D, self.pose_callback)
 		rospy.loginfo('Subscribed to "/fbm2h/robot_at_home/pose2d"')
 		
-		print os.getcwd()
+		rospy.loginfo('cwd: %s', os.getcwd())
 		
 		self.prev_pos = None
 		
@@ -31,30 +31,26 @@ class MyNode():
 		
  
 	def pose_callback(self, pose):
-		
-#		rospy.logdebug("received pose: x %s, y %s", pose.x, pose.y)
-		
 		self.n = self.n + 1
 		
-#		if self.avg:
-#			self.avg = self.avg*(self.n-1)/self.n + pos.x/self.n
-#		else:
-#			self.avg = pos.x
-		
-		
 		if self.prev_pos:
-			delta = d(pose, self.prev_pos)
 			
-			#print "%1.6f"%delta
+			if self.prev_pos == pose:
 			
-			
-			
-			n = int(delta/D_INTERVAL)
-			if n in self.d_distribution.keys():
-				self.d_distribution[n] = self.d_distribution[n] + 1
+				if 'lost' in self.d_distribution.keys():
+					self.d_distribution['lost'] = self.d_distribution['lost'] + 1
+				else:
+					self.d_distribution['lost'] = 1
+					
 			else:
-				self.d_distribution[n] = 1
-			
+				
+				delta = d(pose, self.prev_pos)
+				n = int(delta/D_INTERVAL)
+				if n in self.d_distribution.keys():
+					self.d_distribution[n] = self.d_distribution[n] + 1
+				else:
+					self.d_distribution[n] = 1
+					
 			
 			
 			# save csv
@@ -66,19 +62,23 @@ class MyNode():
 				with open('log/mocap_noise_statistics.csv', 'w') as out:
 					out.write(csv)
 				
-			# print distribution from 0 to 5mm
+			# print distribution from 0 to 50
 			if not self.n%10:
 				print "\n\ndistance distribution"
+				
+				if i in self.d_distribution.keys():
+					print "lost\t%s" % ("."*int(200.0*self.d_distribution['lost']/self.n))
+				else:
+					print "lost\t"
+			
 				for i in range(0, 50):
 					if i in self.d_distribution.keys():
 						print "%.5f\t%s" % (D_INTERVAL*i, "."*int(200.0*self.d_distribution[i]/self.n))
 					else:
 						print "%.5f" % (D_INTERVAL*i)
 				
-				self.sum_d = self.sum_d + delta
+			#	self.sum_d = self.sum_d + delta
 				
-			#	print "sum:\t%.6f\tdiff:\t%1.6f\t%s"%(self.sum_d, delta, "."*int(10000*delta))
-			
 		self.prev_pos = pose
 	
 
