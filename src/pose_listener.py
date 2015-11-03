@@ -16,8 +16,8 @@ class MyNode():
 	def __init__(self):
 		rospy.init_node('poses_listener', anonymous=True)
 		
-		rospy.Subscriber("/fbm2h/robot_at_home/pose2d", Pose2D, self.pose_callback)
-		rospy.loginfo('Subscribed to "/fbm2h/robot_at_home/pose2d"')
+		rospy.Subscriber("/stat/markerset/pose2d", Pose2D, self.pose_callback)
+		rospy.loginfo('Subscribed to "/stat/markerset/pose2d"')
 		
 		rospy.loginfo('cwd: %s', os.getcwd())
 		
@@ -57,7 +57,10 @@ class MyNode():
 			if not self.n%100:
 				csv = ""
 				for i in self.d_distribution.keys():
-					csv = csv + "%f,%i\n" % (D_INTERVAL*i, self.d_distribution[i])
+					if i != 'lost':
+						csv = csv + "%f,%i\n" % (D_INTERVAL*i, self.d_distribution[i])
+					else:
+						csv = csv + "lost,%i\n" % (self.d_distribution[i])
 				
 				with open('log/mocap_noise_statistics.csv', 'w') as out:
 					out.write(csv)
@@ -66,7 +69,7 @@ class MyNode():
 			if not self.n%10:
 				print "\n\ndistance distribution"
 				
-				if i in self.d_distribution.keys():
+				if 'lost' in self.d_distribution.keys():
 					print "lost\t%s" % ("."*int(200.0*self.d_distribution['lost']/self.n))
 				else:
 					print "lost\t"

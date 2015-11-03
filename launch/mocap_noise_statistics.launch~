@@ -9,13 +9,14 @@
 			respawn="false"
 			launch-prefix=""
 			required="true">
-			<rosparam file="$(find rockin_mocap)/config/fbm1_mocap.yaml" command="load" />
+			<rosparam file="$(find rockin_mocap)/config/fbm2h_mocap.yaml" command="load" />
 		</node-->
 
 		<node name="statistics"
 			pkg="mocap_noise_statistics"
 			type="pose_listener.py"
 			output="screen"
+			required="true"
 		/>
 
 	</group>    

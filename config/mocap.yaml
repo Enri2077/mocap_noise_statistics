@@ -1,0 +1,6 @@
+rigid_bodies:
+  '5':
+    pose: markerset/pose
+    pose2d: markerset/pose2d
+    child_frame_id: markerset
+    parent_frame_id: world
